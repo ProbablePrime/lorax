@@ -12,7 +12,7 @@ import * as Q from 'q';
 import {exec} from 'child_process';
 import * as util from 'util';
 
-const GIT_LOG = "git log --grep='%s' -E --format=%s %s..HEAD";
+const GIT_LOG = "git log --grep=\"%s\" -E --format=%s %s..%s";
 const GIT_LOG_ALL = "git log --grep='%s' -E --format=%s";
 const GIT_TAG = "git describe --tags --abbrev=0";
 const GIT_LOG_FORMAT = "%H%n%s%n%b%n==END==";
@@ -40,10 +40,10 @@ function getLastTag(): Promise<string> {
  * @description
  * Read all commits watching match pattern since a certain tag
  */
-function getLog(match: string, tag: string): Promise<Array<string>> {
+function getLog(match: string, tag: string, tag2: string = 'HEAD'): Promise<Array<string>> {
   const deferred = Q.defer();
-  const cmd = tag ? util.format(GIT_LOG, match, GIT_LOG_FORMAT, tag) : util.format(GIT_LOG_ALL, match, GIT_LOG_FORMAT);
-
+  const cmd = tag ? util.format(GIT_LOG, match, GIT_LOG_FORMAT, tag, tag2) : util.format(GIT_LOG_ALL, match, GIT_LOG_FORMAT);
+  console.log(cmd);
   exec(cmd, function(error, stdout) {
     stdout = stdout || '';
 

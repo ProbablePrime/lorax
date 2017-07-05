@@ -38,7 +38,7 @@ class Lorax {
    * @description
    * Get all commits or commits since last tag
    */
-  get(grep: string, tag?: string): Promise<Array<string>> {
+  get(grep: string, tag?: string, until: string): Promise<Array<string>> {
     const promise = tag ? Q.resolve(tag) : git.getLastTag();
     return promise
     .then((tag) => {
@@ -46,8 +46,11 @@ class Lorax {
       if (tag) {
         msg += " since " + tag;
       }
+      if(until) {
+        msg += " until " + tag;
+      }
       console.log(msg);
-      return git.getLog(grep, tag);
+      return git.getLog(grep, tag, until);
     });
   }
 
@@ -59,7 +62,7 @@ class Lorax {
   generate(toTag: string, file: string, options: Object) {
     let grep = this._config.get("type").join("|");
 
-    return this.get(grep, options.since)
+    return this.get(grep, options.since, options.until)
     .then((commits: Array<string>) => {
       const parsedCommits: Array<Commit> = [];
       commits.forEach((commit: string) => {
